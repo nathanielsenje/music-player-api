@@ -1,34 +1,28 @@
-var request = require('request'); // "Request" library
+//Get playlists
+var SpotifyWebApi = require('spotify-web-api-node');
 
-var client_id = '1678dc48a1e94d21b385766b57757793'; // Your client id
-var client_secret = '8dd1ed9a706746db92aa7ed57dcb3fc2'; // Your secret
-
-// your application requests authorization
-var authOptions = {
-  url: 'https://accounts.spotify.com/api/token',
-  headers: {
-    'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
-  },
-  form: {
-    grant_type: 'client_credentials'
-  },
-  json: true
-};
-
-request.post(authOptions, function (error, response, body) {
-  if (!error && response.statusCode === 200) {
-
-    // use the access token to access the Spotify Web API
-    var token = body.access_token;
-    var options = {
-      url: 'https://api.spotify.com/v1/users/jmperezperez',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      },
-      json: true
-    };
-    request.get(options, function (error, response, body) {
-      console.log(body);
-    });
-  }
+// credentials are optional
+var spotifyApi = new SpotifyWebApi({
+  clientId: '1678dc48a1e94d21b385766b57757793',
+  clientSecret: '8dd1ed9a706746db92aa7ed57dcb3fc2',
+  redirectUri: 'localhost:3000'
 });
+
+spotifyApi.setAccessToken("BQCFLEzBlaQN-q8LsrqR_G4MPz-yuHtlUhWt-O8LqpCnc7go6UZoRo4JzLNzgZAV2d1Xt4uIBtk7oMaMc7eEVlPKKxUYPjdh2_0yXMBbkJRPmTRoOnc");
+
+const getPlaylists = () => {
+  spotifyApi.searchPlaylists('chillstep')
+    .then(function (data) {
+      result = data.body.playlists.items
+      elements = result.forEach(item => {
+        console.log(item.body);
+      });
+      return elements;
+    }, function (err) {
+      console.log('There was an error: \n', err);
+      return err;
+    });
+}
+
+
+module.exports = { playlists: getPlaylists() };
